@@ -7,12 +7,12 @@ from scipy import optimize
 
 def loadgadget_header(filename):
     '''
-    Code to read in the header of a Gadget File 
+    Code to read in the header of a Gadget File
     ---------
     Inputs
         filename: base of filename (if split into multiple files, leave off '.x')
     ---------
-    Outputs 
+    Outputs
         header: dictionary with snapshot info
         Numfiles: number of files for the snapshot
     '''
@@ -54,7 +54,7 @@ def loadgadget(filename,longIDs=False):
         filename: base of filename (if split into multiple files, leave off '.x')
         longIDs: if IDs are stored as 64 bit integers, have to turn this on
     ---------
-    Outputs 
+    Outputs
         header: dictionary with snapshot info
         data: Nx7 array with ID, x, y, z, vx, vy, vz
     '''
@@ -100,7 +100,7 @@ def loadgadget(filename,longIDs=False):
             temp = np.ndarray((1, N_arr[1]), 'i', temp)[0]
         mydata[:,0] = abs(temp)
         f.read(8)
-        
+
         if header['mass']==0:
             #Read Masses
             temp = f.read(4*N_arr[1])
@@ -132,15 +132,15 @@ def loadgadget(filename,longIDs=False):
 #         alpha: how much to reduce the radius by on each iteration
 #         reps_max: maximum number of iterations.
 #     ---------
-#     Outputs 
+#     Outputs
 #         center: numpy array, with the center [x,y,z]
 #     '''
 
-    
-#     N = pos.shape[0] #number of points 
+
+#     N = pos.shape[0] #number of points
 #     p = pos.copy() #initialize
-#     center = np.zeros([1,3]) #initialize 
-    
+#     center = np.zeros([1,3]) #initialize
+
 #     reps = 0 #counter
 #     while (N>N_min):
 #         center += [np.mean(p[:,0]), np.mean(p[:,1]), np.mean(p[:,2])] #find new COM
@@ -168,7 +168,7 @@ def clustercentre(pos, N_min,alpha,R=-1,reps_max=1e3):
     ---------
     Outputs
         center: numpy array, with the center [x,y,z]'''
-    
+
     #initialize
     N = pos.shape[0] #number of points
     p = pos.copy()
@@ -202,7 +202,7 @@ def calculate_potential_spherical(r,G,m):
     Outputs
         P: potential at position of each particle (numpy array, length N)
     '''
-    
+
     r[r==0]+=1e-8 #make sure no zeros.
 
     #Inside Potential
@@ -238,7 +238,7 @@ def energies_spherical(data,G,m,P=0.0,P0=0.0):
     Outputs
         E: Energy of each each particle. Energy is defined as in Binney and Tremaine as E=-(P+K), negative energies mean the particle is unbound
     '''
-    
+
     ID,x,y,z,vx,vy,vz = data.T
     r = np.linalg.norm([x,y,z],axis=0)
     v = np.linalg.norm([vx,vy,vz],axis=0)
@@ -268,17 +268,17 @@ def remove_unbound(data,G,m,r_max=np.inf,P0=0.0):
     nold = nnew + 1
 
     while nold>nnew:
-        
+
         #Remove particles outside of r_max
         ID,x,y,z,vx,vy,vz = data_bound.T
         r = np.linalg.norm([x,y,z],axis=0)
         v = np.linalg.norm([vx,vy,vz],axis=0)
         data_bound = data_bound[r<r_max]
-        
+
         #Remove particles with KE>PE
         E = energies_spherical(data_bound,G,m,P0)
         data_bound = data_bound[E>0]
-        
+
         #Get new number of particles
         nold = int(nnew)
         nnew = data_bound.shape[0]
@@ -316,7 +316,7 @@ def func_relaxtime(number,size,mass,gravity=1):
 
 def func_relaxinv(number,time,mass,gravity=1):
     return np.cbrt((time*np.log(number))/((0.1*np.sqrt(number))**2*gravity*mass))
-    
+
 def func_evaptime(time):
     return 136*time
 
